@@ -1,0 +1,12 @@
+# Entorno virtual local
+venv/
+
+# Variables de entorno con credenciales sensibles.
+.env
+
+# Base de datos vectorial local (Se genera sola al correr el script).
+chroma_db/
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
