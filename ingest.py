@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 
 def ejecutar_pipeline_ingesta(ruta_pdf, ruta_base_datos="./chroma_db"):
     # Cargar el documento PDF
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # Cargar variables de entorno del archivo .env
     load_dotenv()
     
-    # RECOMENDACIÓN: Colocá un archivo PDF real de tus estudios en la carpeta y poné su nombre aquí
+    #Colocá un archivo PDF real de tus estudios en la carpeta y poné su nombre aquí
     ARCHIVO_PRUEBA = "Guia_Comandos_Git_Estudiantes.pdf" 
     
     try:
@@ -66,10 +66,10 @@ if __name__ == "__main__":
         
         # --- PRUEBA CIENTÍFICA DE RECUPERACIÓN ---
         print("\n" + "="*40)
-        print("🔬 VERIFICACIÓN DE BÚSQUEDA SEMÁNTICA")
+        print("VERIFICACIÓN DE BÚSQUEDA SEMÁNTICA")
         print("="*40)
         
-        consulta = "¿Cuáles son las ideas o requisitos principales del documento?"
+        consulta = "¿Cual es la configuración global básica de git?"
         print(f"Haciendo consulta de prueba: '{consulta}'\n")
         
         # Buscar los 2 fragmentos más parecidos en la base de datos
