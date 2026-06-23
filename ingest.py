@@ -52,32 +52,19 @@ def ejecutar_pipeline_ingesta(ruta_pdf, ruta_base_datos="./chroma_db"):
             
     print("[ÉXITO] Pipeline completado. Datos indexados y persistidos.")
     return vector_store
-
+   #Bloque de arranque del script principal
 if __name__ == "__main__":
-    # Cargar variables de entorno del archivo .env
     load_dotenv()
-    
-    #Colocá un archivo PDF real de tus estudios en la carpeta y poné su nombre aquí
-    ARCHIVO_PRUEBA = "Guia_Comandos_Git_Estudiantes.pdf" 
-    
-    try:
-        # Ejecutar todo el proceso
-        db_vectorial = ejecutar_pipeline_ingesta(ARCHIVO_PRUEBA)
-        
-        # --- PRUEBA CIENTÍFICA DE RECUPERACIÓN ---
-        print("\n" + "="*40)
-        print("VERIFICACIÓN DE BÚSQUEDA SEMÁNTICA")
-        print("="*40)
-        
-        consulta = "¿Cual es la configuración global básica de git?"
-        print(f"Haciendo consulta de prueba: '{consulta}'\n")
-        
-        # Buscar los 2 fragmentos más parecidos en la base de datos
-        resultados = db_vectorial.similarity_search(consulta, k=2)
-        
-        for i, doc in enumerate(resultados, 1):
-            print(f"[Resultado {i}] (Página {doc.metadata.get('page', 0) + 1})")
-            print(f"Texto: {doc.page_content[:200]}...\n")
-            
-    except Exception as e:
-        print(f"\n❌ Error en el flujo: {e}")
+
+# Nombre de archivo PDF en la carpeta del proyecto
+ARCHIVO_ESTUDIO = "Guia_Comandos_Git_Estudiantes.pdf" 
+
+try:
+    db_vectorial = ejecutar_pipeline_ingesta(ARCHIVO_ESTUDIO)
+    print("\n" + "="*50)
+    print("¡BASE DE DATOS VECTORIAL CREADA CON ÉXITO!")
+    print("La carpeta './chroma_db' ya está lista para usarse.")
+    print("="*50)
+except Exception as e:
+    print(f"\n[ERROR] Ocurrió un fallo en la ejecución: {e}")
+
