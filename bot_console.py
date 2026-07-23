@@ -21,7 +21,7 @@ def iniciar_chatbot(ruta_base_datos="./chroma_db"):
     retriever = vector_store.as_retriever(search_kwargs={"k": 3})
 
     #Configurar el LLM (gemini-2.5-flash)
-    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
+    llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.3)
 
     #Reformulacion de la pregunta basándose en el historial
     prompt_reformulacion = ChatPromptTemplate.from_messages([
