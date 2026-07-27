@@ -9,9 +9,14 @@ from langchain_core.messages import HumanMessage, AIMessage
 
 def iniciar_chatbot(ruta_base_datos="./chroma_db"):
     print("[INFO] Iniciando el Asistente de Estudio...")
+    api_key = os.getenv("GOOGLE_API_KEY")
 
     #Carga de base de datos vectorial
-    embeddings_model = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+    embeddings_model = GoogleGenerativeAIEmbeddings(
+        model="models/gemini-embedding-001",
+        google_api_key=api_key,
+        max_retries=3
+    )
     vector_store = Chroma(
         persist_directory=ruta_base_datos,
         embedding_function=embeddings_model
@@ -20,15 +25,19 @@ def iniciar_chatbot(ruta_base_datos="./chroma_db"):
     #Retriever (Recuperador) fragmentos relevantes
     retriever = vector_store.as_retriever(search_kwargs={"k": 3})
 
-    #Configurar el LLM (gemini-2.5-flash)
-    llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash-lite", temperature=0.3)
+    #Configurar el LLM
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-3.5-flash-lite", 
+        temperature=0.3,
+        google_api_key=api_key
+    )
 
     #Reformulacion de la pregunta basándose en el historial
     prompt_reformulacion = ChatPromptTemplate.from_messages([
             ("system", "Dada la historia de la conversación y la última pregunta del usuario, "
-                    "formula una pregunta independiente que pueda entenderse sin el historial. "
-                    "IMPORTANTE: Devuelve ÚNICAMENTE el texto de la pregunta reformulada. "
-                    "No uses comillas, no agregues introducciones, no uses markdown y NO la respondas."),
+               "formula una ÚNICA pregunta clara e independiente en una sola línea de texto. "
+               "CRÍTICO: Devuelve SOLO la pregunta. No uses saltos de línea, no agregues prefijos, "
+               "no uses comillas ni markdown, y NO intentes responderla."),
             MessagesPlaceholder("chat_history"),
             ("human", "{input}"),
         ])
@@ -83,7 +92,7 @@ if __name__ == "__main__":
             # Ejecutar la cadena pasando la pregunta y el historial actual
             respuesta = chatbot.invoke({
                 "input": consulta_usuario,
-                "chat_history": historial_chat
+                "chat_history": historial_chat[-4:]  # Limitar a los últimos 4 mensajes para mantener el contexto
             })
             
             texto_respuesta = respuesta['answer']

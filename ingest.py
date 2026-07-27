@@ -7,6 +7,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 
 def ejecutar_pipeline_ingesta(ruta_pdf, ruta_base_datos="./chroma_db"):
+    load_dotenv()
     # Cargar el documento PDF
     print(f"[INFO] Cargando el archivo académico: {ruta_pdf}")
     if not os.path.exists(ruta_pdf):
@@ -22,10 +23,16 @@ def ejecutar_pipeline_ingesta(ruta_pdf, ruta_base_datos="./chroma_db"):
     chunks = text_splitter.split_documents(paginas)
     print(f"[ÉXITO] Cantidad de fragmentos (chunks) generados: {len(chunks)}")
 
-    #Modelado de Embeddings e Indexación en ChromaDB
+   #Modelado de Embeddings e Indexación en ChromaDB
     print("[INFO] Conectando con Google GenAI para generar Embeddings matemáticos...")
-    embeddings_model = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
-    
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        raise ValueError("No se detectó GOOGLE_API_KEY. Revisa tu archivo .env")
+        
+    embeddings_model = GoogleGenerativeAIEmbeddings(
+        model="models/gemini-embedding-001",
+        google_api_key=api_key
+    )
     print(f"[INFO] Guardando vectores en la base de datos local: {ruta_base_datos}")
     # Inicializamos ChromaDB completamente VACÍA para evitar que LangChain agote la cuota de API gratuita (100 peticiones por minuto).
     vector_store = Chroma(
@@ -52,19 +59,4 @@ def ejecutar_pipeline_ingesta(ruta_pdf, ruta_base_datos="./chroma_db"):
             
     print("[ÉXITO] Pipeline completado. Datos indexados y persistidos.")
     return vector_store
-   #Bloque de arranque del script principal
-if __name__ == "__main__":
-    load_dotenv()
-
-# Nombre de archivo PDF en la carpeta del proyecto
-ARCHIVO_ESTUDIO = "Guia_Comandos_Git_Estudiantes.pdf" 
-
-try:
-    db_vectorial = ejecutar_pipeline_ingesta(ARCHIVO_ESTUDIO)
-    print("\n" + "="*50)
-    print("¡BASE DE DATOS VECTORIAL CREADA CON ÉXITO!")
-    print("La carpeta './chroma_db' ya está lista para usarse.")
-    print("="*50)
-except Exception as e:
-    print(f"\n[ERROR] Ocurrió un fallo en la ejecución: {e}")
-
+   

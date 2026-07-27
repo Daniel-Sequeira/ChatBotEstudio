@@ -41,7 +41,7 @@ def cargar_infraestructura_rag():
     if not os.path.exists(ruta_db):
         return None
     
-    # Llamamos directamente a la función de tu script bot_console.py
+    # Llamamos directamente a la función del script bot_console.py
     return iniciar_chatbot(ruta_base_datos=ruta_db)
 
 # Instanciamos la cadena RAG orquestada de LangChain
@@ -193,8 +193,8 @@ if pregunta_usuario := st.chat_input("Escribe tu pregunta aquí..."):
 
                 try:
                     resultado = rag_chain.invoke({
-                        "input": pregunta_usuario,
-                        "chat_history": st.session_state.historial_langchain
+                        "input": pregunta_usuario.strip(),
+                        "chat_history":[] #enviar contexto vacio por limites de modelo gratuito, la pregunta se toma como contexto
                     })
 
                     texto_respuesta = resultado['answer']
